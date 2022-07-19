@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function Question({question}) {
     return (
         <div className={"border rounded bg-light p-2"} style={{
@@ -8,6 +10,14 @@ export default function Question({question}) {
             flexDirection: "column",
             gap: "15px"
         }}>
+            <div>
+                <span>
+                    Question {question.id+1}
+                </span>
+                <span className="float-end">
+                    {question.point} <i className="fa-solid fa-star"></i>
+                </span>
+            </div>
             {question.isContainsMedia ? (
                 <div className={"text-center"}>
                     <img style={{
@@ -23,9 +33,7 @@ export default function Question({question}) {
                 </div>
             ) : (
                 <div>
-                    <img style={{
-                        width: "50px"
-                    }} className={"border rounded"} src={`/questions/${question.questionImage}`} />
+                    <Image width={"50px"} height={"50%"} className={"border rounded"} src={`/questions/${question.questionImage}`} />
                 </div>
             )}
             <div>
@@ -33,7 +41,7 @@ export default function Question({question}) {
             </div>
             {question.answerType === "open" ? (
                 <div>
-                    <input placeholder={"Enter answer"}   name={`answer_${question.id}`} id={`answer_${question.id}`} />
+                    <input placeholder={"Enter answer"} autoComplete={"off"} name={`answer_${question.id}`} id={`answer_${question.id}`} />
                 </div>
             ) : (
                 <div>

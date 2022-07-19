@@ -1,11 +1,12 @@
 import {useRouter} from "next/router";
 import Head from "next/head";
-import Layout from "../../../components/Layout";
+import Layout from "../../../../components/Layout";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import axios from "axios"
 import Link from "next/link";
-import Question from "../../../components/Question";
+import Question from "../../../../components/Question";
+import root from "../../../../api/root";
 
 export default function QuizStart() {
     const router = useRouter();
@@ -15,20 +16,23 @@ export default function QuizStart() {
     const [id, setId] = useState('');
 
     const getQuiz = async (id) => {
-        const { data } = await axios.get(`/api/quizzes/${id}`);
+        const { data } = await axios.get(`${root}/api/quizzes/${id}`);
 
-        setQuiz(data);
-        setContent(data.content);
+        if(data==="") {
+            router.push("/404");
+        } else {
+            setQuiz(data);
+            setContent(data.content);
+        }
     }
 
     const isUserWantToStart = async () => {
         if(typeof window !== "undefined") {
-            // if(confirm("Do you want to start quiz?")) {
-            //     return true;
-            // } else {
-            //     return false;
-            // }
-            return true;
+            if(confirm("Do you want to start quiz?")) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -43,17 +47,29 @@ export default function QuizStart() {
                         value: e.target[i]['value']
                     })
                 }
-                const { data } = await axios.post("/api/quiz/finish", output);
+                const { data } = await axios.post(`${root}/api/quiz/finish`, {
+                    quiz: id,
+                    output: output
+                });
+
+                if(typeof window !== "undefined") {
+                    window.sessionStorage.setItem("results", JSON.stringify({[id]: {
+                            output: data
+                    }}))
+
+                    await router.push(`/quiz/start/${id}/results`)
+                }
             }
         }
     }
 
     useEffect(() => {
         if(router.isReady) {
+            const query = router.query.id;
             if(isUserWantToStart()) {
-                getQuiz(router.query.id);
+                getQuiz(query);
             }
-            setId(router.query.id);
+            setId(query);
         }
     }, [router.isReady])
 
@@ -108,9 +124,6 @@ export default function QuizStart() {
                                         {content.map((question, i) => (
                                             <Question key={i} question={question} />
                                         ))}
-                                        <div>
-                                            recaptcha
-                                        </div>
                                         <div className={"text-center"}>
                                             <input type="submit" className={"btn btn-dark fs-4"} value={"Finish"}/>
                                         </div>

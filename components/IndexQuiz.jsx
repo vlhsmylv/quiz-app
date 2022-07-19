@@ -12,7 +12,8 @@ export default function IndexQuiz({quiz, id}) {
                 }} className={"border rounded bg-light"}>
                     <div className={"text-center"}>
                         <img style={{
-                            width: "300px"
+                            width: "300px",
+                            height: "200px"
                         }} src={quiz.preview} className={"border rounded"} alt={quiz.description} />
                     </div>
                     <div className={"text-center ms-3 me-3"}>

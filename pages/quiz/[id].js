@@ -1,11 +1,11 @@
 import {useRouter} from "next/router";
 import Head from "next/head";
 import Layout from "../../components/Layout";
-import AllQuizzes from "../../components/AllQuizzes";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {useEffect, useState} from "react";
 import axios from "axios"
 import Link from "next/link";
+import root from "../../api/root";
 
 export default function QuizPage() {
     const router = useRouter();
@@ -14,9 +14,13 @@ export default function QuizPage() {
     const [id, setId] = useState('');
 
     const getQuiz = async (id) => {
-        const { data } = await axios.get(`/api/quizzes/${id}`);
+        const { data } = await axios.get(`${root}/api/quizzes/${id}`);
 
-        setQuiz(data);
+        if(data==="") {
+          router.push("/404");
+        } else {
+          setQuiz(data);
+        }
     }
 
     useEffect(() => {
